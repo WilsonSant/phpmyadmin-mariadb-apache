@@ -1,0 +1,36 @@
+networks:
+  mynet:
+services:
+  apache:
+    build:
+      context: .
+      dockerfile: DockerFile
+    volumes:
+      - ./app:/var/www/html  
+    networks:
+      - mynet
+    ports:
+      - "80:80"
+  mariadb:
+    image: mariadb:10.3
+    restart: always
+    environment:
+     MYSQL_ROOT_PASSWORD: teste
+    volumes:
+      - ./mariadb:/var/lib/mysql
+    networks:
+      - mynet
+    ports:
+      - "3306:3306"
+    
+  phpmyadmin:
+    image: phpmyadmin:latest
+    depends_on:
+      - mariadb
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+    networks:
+      - mynet
+    ports: 
+      - "3000:80"
